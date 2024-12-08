@@ -3,90 +3,83 @@ import java.util.ArrayList;
 public class MobilePhone {
 
     private String myNumber;
-    private ArrayList<Contact> myContact;
+    private ArrayList<Contact> myContacts;
 
-    public MobilePhone(String myNumber, ArrayList<Contact> myContact) {
-
-        this.myNumber = myNumber;
-        this.myContact = myContact;
-    }
+    // Constructor
     public MobilePhone(String myNumber) {
         this.myNumber = myNumber;
-        this.myContact = new ArrayList<>();
+        this.myContacts = new ArrayList<>();
     }
 
-    // checks if contact exists: returns true or false and adds new contact.
+    // Adds a new contact if it doesn't already exist
     public boolean addNewContact(Contact contact) {
-
-        if (myContact.contains(contact)) {
-
-            System.out.println("Contact: " + contact + " exists already.");
+        if (findContact(contact.getName()) >= 0) { // Check by name
+            System.out.println("Contact is already on file");
             return false;
-        } else {
-            myContact.add(contact);
-            System.out.println("Contact: " + contact + " Added.");
-            return true;
         }
+        myContacts.add(contact);
+        return true;
     }
 
-    // checks if contact doesn't exist and updates it else returns false.
+    // Updates an existing contact
     public boolean updateContact(Contact oldContact, Contact newContact) {
-
-        if (myContact.contains(oldContact)) {
-            myContact.remove(oldContact);
-            myContact.add(newContact);
-            return true;
-        } else {
+        int position = findContact(oldContact.getName()); // Find by name
+        if (position < 0) {
+            System.out.println(oldContact.getName() + ", was not found.");
             return false;
         }
+        if (findContact(newContact.getName()) != -1) {
+            System.out.println("Contact with name " + newContact.getName() + " already exists. Update was not successful.");
+            return false;
+        }
+        myContacts.set(position, newContact);
+        System.out.println(oldContact.getName() + ", was replaced with " + newContact.getName());
+        return true;
     }
 
-    // checks if contact exists, if so deletes contact else return false.
+    // Removes an existing contact
     public boolean removeContact(Contact contact) {
-
-        if (myContact.contains(contact)) {
-            myContact.remove(contact);
-            System.out.println("Contact: " + contact + " removed.");
-            return true;
-        } else {
-            System.out.println("Contact: " + contact + " doesn't exists.");
+        int position = findContact(contact.getName()); // Find by name
+        if (position < 0) {
+            System.out.println(contact.getName() + ", was not found.");
             return false;
         }
+        myContacts.remove(position);
+        System.out.println(contact.getName() + ", was deleted.");
+        return true;
     }
 
-    // searches contact end returns index
+    // Finds a contact by Contact object and returns its position
     private int findContact(Contact contact) {
-        return myContact.indexOf(contact);
+        return myContacts.indexOf(contact);
     }
 
     // Finds a contact by name and returns its position
     private int findContact(String name) {
-        for (int i = 0; i < myContact.size(); i++) {
-            Contact contact = myContact.get(i);
-            if (contact.getName().equals(name)) {
+        for (int i = 0; i < myContacts.size(); i++) {
+            if (myContacts.get(i).getName().equals(name)) { // Case-sensitive matching
                 return i; // Contact found
             }
         }
         return -1; // Contact not found
     }
 
-    // iterates trought the array myContact. If the contact name exists returns contact else return null;
+    // Queries a contact by name and returns the Contact object
     public Contact queryContact(String name) {
-
-        for (Contact contact : myContact) {
-            if (contact.getName().equalsIgnoreCase(name)) {
-                return contact;
-            }
+        int position = findContact(name); // Find by name
+        if (position >= 0) {
+            return myContacts.get(position);
         }
         return null;
     }
 
-    // prints the myContact array.
+    // Prints all contacts in the required format
     public void printContacts() {
-        System.out.println("Contact List: ");
-        for (int i = 0; i < myContact.size(); i++) {
-            Contact contact = myContact.get(i);
-            System.out.println((i + 1) + ". " + contact.getName() + " -> " + contact.getPhoneNumber());
+        System.out.println("Contact List:");
+        for (int i = 0; i < this.myContacts.size(); i++) {
+            System.out.println((i + 1) + ". " +
+                    this.myContacts.get(i).getName() + " -> " +
+                    this.myContacts.get(i).getPhoneNumber());
         }
     }
 }
